@@ -32,16 +32,17 @@ namespace WesleysMoonsHQModule.Patches
 
                 if (s.name == "CosmocosLevel") // TODO: confirm scene name
                 {
+                    s.DaySpeedMultiplier = 0.959f; // Adjust daytime speed ---- does this need to be changed? daytime may not move during cutscene?
+
                     if (WesleyScripts.LockMoons.Value)
                     {
                         s.maxScrap = 55; // Change max scrap on Cosmocos, only apply when moons are locked
                     }
-                    s.DaySpeedMultiplier = 0.95f; // Adjust daytime speed ---- does this need to be changed? daytime may not move during cutscene?
                 }
 
                 if (s.name == "EmpraLevel") // TODO: confirm scene name
                 {
-                    s.DaySpeedMultiplier = 0.9f; // Adjust daytime speed
+                    s.DaySpeedMultiplier = 0.875f; // Adjust daytime speed
                 }
             }
         }
