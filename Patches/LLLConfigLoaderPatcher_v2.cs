@@ -1,12 +1,12 @@
 ﻿using LethalLevelLoader.Tools;
-using LethalLevelLoader;
 using HarmonyLib;
 using System.Collections.Generic;
+using LethalLevelLoader;
 
 namespace WesleysMoonsHQModule.Patches
 {
     [HarmonyPatch]
-    internal class LLLConfigLoaderPatcher
+    internal class LLLConfigLoaderPatcher_v2
     {
         static readonly List<string> vanillaLevels = ["Adamance","Offense","Assurance","Experimentation","Liquidation","Embrion","Vow","March","Artifice","Dine","Titan","Rend"];
 

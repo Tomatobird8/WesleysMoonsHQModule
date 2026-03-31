@@ -6,7 +6,6 @@ using JLL.Components;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using WesleyMoonScripts;
@@ -30,9 +29,6 @@ namespace WesleysMoonsHQModule
 
         // Loaded plugins
         internal static Dictionary<string, PluginInfo> pluginInfos = [];
-
-        // LLL
-        internal static Version LLLPatchVersion = new(PackDefinition.v73Mods[OPI.LLL_GUID]);
 
         private void Awake()
         {
@@ -62,13 +58,13 @@ namespace WesleysMoonsHQModule
 
             if (Chainloader.PluginInfos.TryGetValue(OPI.LLL_GUID, out PluginInfo pluginInfo))
             {
-                if (pluginInfo.Metadata.Version >= LLLPatchVersion)
+                if (pluginInfo.Metadata.Version >= new Version(PackDefinition.v73Mods[OPI.LLL_GUID]))
                 {
-                    Harmony.PatchAll(typeof(LLLConfigLoaderPatcher));
+                    Harmony.PatchAll(typeof(LLLConfigLoaderPatcher_v2));
                 }
                 else
                 {
-                    Logger.LogWarning($"Version lower than expected: {pluginInfo.Metadata.Version}");
+                    Harmony.PatchAll(typeof(LLLConfigLoaderPatcher_v1));
                 }
             }
 
@@ -124,15 +120,6 @@ namespace WesleysMoonsHQModule
 
                 spawner.randomPool = [nullEnemy];
             }
-        }
-
-        internal static void Unpatch()
-        {
-            Logger.LogDebug("Unpatching...");
-
-            Harmony?.UnpatchSelf();
-
-            Logger.LogDebug("Finished unpatching!");
         }
     }
 }

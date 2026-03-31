@@ -61,7 +61,6 @@ namespace WesleysMoonsHQModule.Patches
                 __instance.DisplayMenuNotification($"WARNING! Modpack misconfiguration: {invalidSessionReason}", "[ OK ]");
                 WesleysMoonsHQModule.Logger.LogWarning($"WARNING! Modpack misconfiguration: {invalidSessionReason}");
             }
-
         }
 
         internal static string CheckModValidity(Dictionary<string, string> dict, bool required)

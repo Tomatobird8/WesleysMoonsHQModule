@@ -22,7 +22,7 @@ namespace WesleysMoonsHQModule
             {OPI.LLL_GUID, "1.4.11" },
             {OPI.PATHFINDINGLAGFIX_GUID, "2.2.4" },
             {OPI.PATHFINDINGLIB_GUID, "2.3.2" },
-            {OPI.STARLANCERAIFIX_GUID, "3.9.1" },
+            {OPI.STARLANCERAIFIX_GUID, "3.9.0" }, // 3.9.1 on TS
             {OPI.LETHALLIB_GUID, "1.0.1" }
         };
 
