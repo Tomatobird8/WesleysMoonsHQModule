@@ -17,26 +17,26 @@ namespace WesleysMoonsHQModule.Patches
             int verNum = GameNetworkManager.Instance.gameVersionNum;
 
             // Global required mods
-            invalidSessionReason += CheckModValidity(WesleysMoonsHQModule.commonRequiredMods, true);
+            invalidSessionReason += CheckModValidity(PackDefinition.commonRequiredMods, true);
 
             // Version specific required mods
             switch (verNum)
             {
                 case 69:
-                    invalidSessionReason += CheckModValidity(WesleysMoonsHQModule.v69Mods, true);
+                    invalidSessionReason += CheckModValidity(PackDefinition.v69Mods, true);
                     break;
 
                 case 72:
-                    invalidSessionReason += CheckModValidity(WesleysMoonsHQModule.v72Mods, true);
+                    invalidSessionReason += CheckModValidity(PackDefinition.v72Mods, true);
                     break;
 
                 case 73:
-                    invalidSessionReason += CheckModValidity(WesleysMoonsHQModule.v73Mods, true);
+                    invalidSessionReason += CheckModValidity(PackDefinition.v73Mods, true);
                     break;
             }
 
             // Global optional mods
-            invalidSessionReason += CheckModValidity(WesleysMoonsHQModule.commonOptionalMods, false);
+            invalidSessionReason += CheckModValidity(PackDefinition.commonOptionalMods, false);
 
             // FreeMoons special check
             if (WesleysMoonsHQModule.pluginInfos.ContainsKey(OtherPluginInfos.FREEMOONS_GUID) && WesleyScripts.LockMoons.Value)
@@ -69,9 +69,9 @@ namespace WesleysMoonsHQModule.Patches
             string invalidSessionReason = "";
             foreach (KeyValuePair<string, string> entry in dict)
             {
-                if (!WesleysMoonsHQModule.pluginInfos.ContainsKey(entry.Key) && required)
+                if (!WesleysMoonsHQModule.pluginInfos.ContainsKey(entry.Key))
                 {
-                    invalidSessionReason += $"{entry.Key} v{entry.Value} is misssing, ";
+                    if (required) invalidSessionReason += $"{entry.Key} v{entry.Value} is misssing, ";
                     continue;
                 }
                 else if (WesleysMoonsHQModule.pluginInfos[entry.Key].Metadata.Version.ToString() != entry.Value)

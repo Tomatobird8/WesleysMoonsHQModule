@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <!-- BepInEx Properties -->
     <PropertyGroup>
@@ -43,6 +43,10 @@
     <!-- Primary Package References -->
     <ItemGroup>
         <PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all" />
+        <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.3">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
         <PackageReference Include="BepInEx.Core" Version="5.*" PrivateAssets="all" />
         <PackageReference Include="BepInEx.PluginInfoProps" Version="2.*" PrivateAssets="all" />
         <PackageReference Include="LethalCompany.GameLibs.Steam" Version="*-*" PrivateAssets="all" />
@@ -60,6 +64,9 @@
     <ItemGroup>
       <Reference Include="JLL">
         <HintPath>..\JLLConfigurator\deps\JLL.dll</HintPath>
+      </Reference>
+      <Reference Include="LethalLevelLoader" Publicize="true">
+        <HintPath>deps\LethalLevelLoader.dll</HintPath>
       </Reference>
       <Reference Include="WesleyMoonScripts">
         <HintPath>..\JLLConfigurator\deps\WesleyMoonScripts.dll</HintPath>

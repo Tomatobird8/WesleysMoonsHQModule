@@ -3,8 +3,10 @@ using BepInEx.Bootstrap;
 using BepInEx.Logging;
 using HarmonyLib;
 using JLL.Components;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using WesleyMoonScripts;
@@ -23,49 +25,14 @@ namespace WesleysMoonsHQModule
         internal new static ManualLogSource Logger { get; private set; } = null!;
         internal static Harmony? Harmony { get; set; }
 
+        // Allowed items to spawn in giftshop (to avoid spawning scrap)
         internal static List<string> allowedItemNames = ["Bury the child videotape", "Teach the disloyal videotape"];
 
+        // Loaded plugins
         internal static Dictionary<string, PluginInfo> pluginInfos = [];
 
-        internal static Dictionary<string, string> commonRequiredMods = new Dictionary<string, string>
-        {
-            {OPI.LOADSTONE_GUID, "0.1.23" }
-        };
-
-        internal static Dictionary<string, string> commonOptionalMods = new Dictionary<string, string>
-        {
-            {OPI.FREEMOONS_GUID, "1.0.2" }, // 1.2.0 on TS
-            {OPI.CULLFACTORY_GUID, "2.0.4" }
-        };
-
-        internal static Dictionary<string, string> v69Mods = new Dictionary<string, string>
-        {
-            {OPI.LLL_GUID, "1.4.11" },
-            {OPI.PATHFINDINGLAGFIX_GUID, "2.2.4" },
-            {OPI.PATHFINDINGLIB_GUID, "2.3.2" },
-            {OPI.STARLANCERAIFIX_GUID, "3.9.1" },
-            {OPI.LETHALLIB_GUID, "1.0.1" }
-        };
-
-        internal static Dictionary<string, string> v72Mods = new Dictionary<string, string>
-        {
-            {OPI.LLL_GUID, "1.4.11" },
-            {OPI.PATHFINDINGLAGFIX_GUID, "2.2.4" },
-            {OPI.PATHFINDINGLIB_GUID, "2.3.2" },
-            {OPI.STARLANCERAIFIX_GUID, "3.11.1" },
-            {OPI.LETHALLIB_GUID, "1.1.1" }
-        };
-
-        internal static Dictionary<string, string> v73Mods = new Dictionary<string, string>
-        {
-            {OPI.LLL_GUID, "1.6.8" },
-            {OPI.WEATHERREGISTRY_GUID, "0.7.5"},
-            {OPI.MROVLIB_GUID, "0.4.2" },
-            {OPI.PATHFINDINGLAGFIX_GUID, "2.2.5" },
-            {OPI.PATHFINDINGLIB_GUID, "2.4.1" },
-            {OPI.STARLANCERAIFIX_GUID, "3.11.1" },
-            {OPI.LETHALLIB_GUID, "1.1.1" }
-        };
+        // LLL
+        internal static Version LLLPatchVersion = new(PackDefinition.v73Mods[OPI.LLL_GUID]);
 
         private void Awake()
         {
@@ -92,6 +59,18 @@ namespace WesleysMoonsHQModule
             Harmony.PatchAll(typeof(StartOfRoundPatcher)); // BALANCING PATCHES
 
             Harmony.PatchAll(typeof(MenuManagerPatcher));
+
+            if (Chainloader.PluginInfos.TryGetValue(OPI.LLL_GUID, out PluginInfo pluginInfo))
+            {
+                if (pluginInfo.Metadata.Version >= LLLPatchVersion)
+                {
+                    Harmony.PatchAll(typeof(LLLConfigLoaderPatcher));
+                }
+                else
+                {
+                    Logger.LogWarning($"Version lower than expected: {pluginInfo.Metadata.Version}");
+                }
+            }
 
             Logger.LogDebug("Finished patching!");
         }
@@ -132,7 +111,7 @@ namespace WesleysMoonsHQModule
         }
 
         // HYVE BALANCE CHANGES
-        // beehive chance from large beehive 89.2% -> 30.6%
+        // Replace big hive spawn table with a null enemy
         internal static void EditHyveScene(Scene scene)
         {
             GameObject environment = GetRootGameObject(scene, "Environment");
@@ -143,15 +122,7 @@ namespace WesleysMoonsHQModule
             {
                 if (spawner.name != "Spawner") continue;
 
-                foreach (EnemySpawner.WeightedEnemyRefrence reference in spawner.randomPool)
-                {
-                    if (reference.enemyType.name == "RedLocustBees")
-                    {
-                        reference.rarity = 49; // Decrease beehive spawn rarity from large hives
-                    }
-                }
-
-                spawner.randomPool.Add(nullEnemy); // Add high chance to not spawn an enemy
+                spawner.randomPool = [nullEnemy];
             }
         }
 
