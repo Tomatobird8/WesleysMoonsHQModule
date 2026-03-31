@@ -32,7 +32,7 @@ namespace WesleysMoonsHQModule.Patches
 
                 if (s.name == "CosmocosLevel") // TODO: confirm scene name
                 {
-                    s.DaySpeedMultiplier = 0.959f; // Adjust daytime speed ---- does this need to be changed? daytime may not move during cutscene?
+                    s.DaySpeedMultiplier = 0.959f; // Re-ajust daytime speed - Landing cutscene
 
                     if (WesleyScripts.LockMoons.Value)
                     {
@@ -42,7 +42,7 @@ namespace WesleysMoonsHQModule.Patches
 
                 if (s.name == "EmpraLevel") // TODO: confirm scene name
                 {
-                    s.DaySpeedMultiplier = 0.875f; // Adjust daytime speed
+                    s.DaySpeedMultiplier = 0.875f; // Re-adjust daytime speed - Cart ride
                 }
             }
         }
