@@ -12,12 +12,9 @@ namespace WesleysMoonsHQModule.Patches
         [HarmonyPrefix]
         public static void PatchDungeon(object[] __args)
         {
-            WesleysMoonsHQModule.Logger.LogDebug("PatchDungeon running");
             object extendedDungeonFlow = __args[0];
             var type = extendedDungeonFlow.GetType();
-            WesleysMoonsHQModule.Logger.LogDebug(type.FullName);
             var genConfigs = type.GetProperty("GenerateAutomaticConfigurationOptions", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
-            WesleysMoonsHQModule.Logger.LogDebug(genConfigs.Name);
             genConfigs.SetValue(extendedDungeonFlow, false);
         }
 

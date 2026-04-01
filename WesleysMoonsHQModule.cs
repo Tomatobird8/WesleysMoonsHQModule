@@ -3,6 +3,7 @@ using BepInEx.Bootstrap;
 using BepInEx.Logging;
 using HarmonyLib;
 using JLL.Components;
+using JLL.Components.Filters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,6 +27,9 @@ namespace WesleysMoonsHQModule
 
         // Allowed items to spawn in giftshop (to avoid spawning scrap)
         internal static List<string> allowedItemNames = ["Bury the child videotape", "Teach the disloyal videotape"];
+
+        // Skip these scenes
+        internal static List<string> scenesToSkip = ["MainMenu", "InitScene", "InitSceneLaunchOptions"];
 
         // Loaded plugins
         internal static Dictionary<string, PluginInfo> pluginInfos = [];
@@ -73,6 +77,9 @@ namespace WesleysMoonsHQModule
 
         internal static void OnSceneLoad(Scene scene, LoadSceneMode mode)
         {
+            if (scenesToSkip.Contains(scene.name))
+                return;
+            RemoveAprilFools(scene);
             if (scene.name == "MusemaScene") 
             {
                 EditMusemaScene(scene);
@@ -80,6 +87,10 @@ namespace WesleysMoonsHQModule
             if (scene.name == "Asteroid14Scene" && WesleyScripts.LockMoons.Value)
             {
                 EditHyveScene(scene);
+            }
+            if (scene.name == "CalistScene")
+            {
+                EditCalistScene(scene);
             }
         }
 
@@ -91,6 +102,8 @@ namespace WesleysMoonsHQModule
         // GALETRY GIFT SHOP CHANGES
         internal static void EditMusemaScene(Scene scene)
         {
+            Logger.LogInfo("Editing Galetry Scene.");
+
             GameObject environment = GetRootGameObject(scene, "Environment");
 
             foreach (ItemShop shop in environment.transform.Find("Giftshop/Itemshop").GetComponentsInChildren<ItemShop>())
@@ -110,6 +123,8 @@ namespace WesleysMoonsHQModule
         // Replace big hive spawn table with a null enemy
         internal static void EditHyveScene(Scene scene)
         {
+            Logger.LogInfo("Editing Galetry Scene.");
+
             GameObject environment = GetRootGameObject(scene, "Environment");
 
             EnemySpawner.WeightedEnemyRefrence nullEnemy = new() { rarity = 99 };
@@ -119,6 +134,41 @@ namespace WesleysMoonsHQModule
                 if (spawner.name != "Spawner") continue;
 
                 spawner.randomPool = [nullEnemy];
+            }
+        }
+
+        // CALIST ACCESSIBILITY CHANGES
+        // parent sky objects to non-animated object
+        internal static void EditCalistScene(Scene scene)
+        {
+            Logger.LogInfo("Editing Calist Scene.");
+
+            Transform environment = GetRootGameObject(scene, "Environment").transform;
+            Transform sun = environment.Find("Lighting/BrightDay/Sun");
+            Transform[] skyObjects = 
+                [
+                sun.transform.Find("SunAnimContainer/GameObject"), 
+                sun.transform.Find("SunAnimContainer/AsteroidsPAck"), 
+                sun.transform.Find("SunAnimContainer/Sphere")
+                ];
+            foreach (Transform t in skyObjects)
+            {
+                t.SetParent(sun.transform);
+            }
+        }
+
+        // REMOVE APRIL FOOLS
+        internal static void RemoveAprilFools(Scene scene)
+        {
+            DateFilter[] dateFilters = FindObjectsOfType<DateFilter>();
+            foreach (DateFilter d in dateFilters) 
+            {
+                if (d.gameObject.name != "randomAprilEffect")
+                {
+                    return;
+                }
+                Logger.LogInfo("Removing randomAprilEffect...");
+                Destroy(d.gameObject);
             }
         }
     }
