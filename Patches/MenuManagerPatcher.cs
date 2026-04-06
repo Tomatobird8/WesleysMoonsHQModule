@@ -33,6 +33,10 @@ namespace WesleysMoonsHQModule.Patches
                 case 73:
                     invalidSessionReason += CheckModValidity(PackDefinition.v73Mods, true);
                     break;
+
+                default:
+                    invalidSessionReason += "Unsupported game version";
+                    break;
             }
 
             // Global optional mods

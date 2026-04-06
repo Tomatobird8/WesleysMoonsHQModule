@@ -14,7 +14,6 @@ namespace WesleysMoonsHQModule.Patches
         [HarmonyPrefix]
         public static void PatchDungeon(ref ExtendedDungeonFlow extendedDungeonFlow)
         {
-            WesleysMoonsHQModule.Logger.LogDebug("Running LLLConfigLoaderPatcher.PatchDungeon()");
             extendedDungeonFlow.GenerateAutomaticConfigurationOptions = false;
         }
 
@@ -22,7 +21,6 @@ namespace WesleysMoonsHQModule.Patches
         [HarmonyPrefix]
         public static void PatchMoon(ref ExtendedLevel extendedLevel)
         {
-            WesleysMoonsHQModule.Logger.LogDebug("Running LLLConfigLoaderPatcher.PatchMoon()");
             extendedLevel.GenerateAutomaticConfigurationOptions = false;
             if (vanillaLevels.Contains(extendedLevel.NumberlessPlanetName))
             {
