@@ -19,6 +19,7 @@ namespace WesleysMoonsHQModule
     [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
     [BepInDependency(OPI.JLL_WMS_GUID)]
     [BepInDependency(OPI.LLL_GUID)]
+
     public class WesleysMoonsHQModule : BaseUnityPlugin
     {
         public static WesleysMoonsHQModule Instance { get; private set; } = null!;
@@ -65,13 +66,13 @@ namespace WesleysMoonsHQModule
                 if (pluginInfo.Metadata.Version >= new Version(PackDefinition.v73Mods[OPI.LLL_GUID]))
                 {
                     Harmony.PatchAll(typeof(LLLConfigLoaderPatcher_v2));
+                    Harmony.PatchAll(typeof(WesleysWeatherStuffPatcher));
                 }
                 else
                 {
                     Harmony.PatchAll(typeof(LLLConfigLoaderPatcher_v1));
                 }
             }
-
             Logger.LogDebug("Finished patching!");
         }
 

@@ -16,6 +16,8 @@ namespace WesleysMoonsHQModule.Patches
 
             int verNum = GameNetworkManager.Instance.gameVersionNum;
 
+            WesleysMoonsHQModule.Logger.LogInfo("Game version: " + verNum);
+
             // Global required mods
             invalidSessionReason += CheckModValidity(PackDefinition.commonRequiredMods, true);
 
