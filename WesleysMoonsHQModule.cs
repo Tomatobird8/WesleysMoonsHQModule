@@ -61,6 +61,8 @@ namespace WesleysMoonsHQModule
 
             Harmony.PatchAll(typeof(MenuManagerPatcher));
 
+            Harmony.PatchAll(typeof(SoundManagerPatcher)); // apply LLL 1.7.0 sound fix to pre v81
+
             if (Chainloader.PluginInfos.TryGetValue(OPI.LLL_GUID, out PluginInfo pluginInfo))
             {
                 if (pluginInfo.Metadata.Version >= new Version(PackDefinition.v73Mods[OPI.LLL_GUID]))
