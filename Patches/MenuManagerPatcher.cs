@@ -12,6 +12,10 @@ namespace WesleysMoonsHQModule.Patches
         [HarmonyPostfix]
         internal static void Start_Postfix(MenuManager __instance)
         {
+            if (__instance.isInitScene)
+            {
+                return;
+            }
             string invalidSessionReason = "";
 
             int verNum = GameNetworkManager.Instance.gameVersionNum;
@@ -64,8 +68,8 @@ namespace WesleysMoonsHQModule.Patches
             if (!invalidSessionReason.IsNullOrWhiteSpace())
             {
                 invalidSessionReason = invalidSessionReason.TrimEnd(',', ' ');
-                __instance.DisplayMenuNotification($"WARNING! Modpack misconfiguration: {invalidSessionReason}", "[ OK ]");
                 WesleysMoonsHQModule.Logger.LogWarning($"WARNING! Modpack misconfiguration: {invalidSessionReason}");
+                __instance.DisplayMenuNotification($"WARNING! Modpack misconfiguration: {invalidSessionReason}", "[ OK ]");
             }
         }
 

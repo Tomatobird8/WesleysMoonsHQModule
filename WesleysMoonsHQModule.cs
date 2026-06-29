@@ -19,6 +19,7 @@ namespace WesleysMoonsHQModule
     [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
     [BepInDependency(OPI.JLL_WMS_GUID)]
     [BepInDependency(OPI.LLL_GUID)]
+    [BepInDependency(OPI.WEATHERREGISTRY_GUID, BepInDependency.DependencyFlags.SoftDependency)]
 
     public class WesleysMoonsHQModule : BaseUnityPlugin
     {
@@ -61,19 +62,26 @@ namespace WesleysMoonsHQModule
 
             Harmony.PatchAll(typeof(MenuManagerPatcher));
 
-            Harmony.PatchAll(typeof(SoundManagerPatcher)); // apply LLL 1.7.0 sound fix to pre v81
-
             if (Chainloader.PluginInfos.TryGetValue(OPI.LLL_GUID, out PluginInfo pluginInfo))
             {
+                if (pluginInfo.Metadata.Version <= new Version(PackDefinition.v73Mods[OPI.LLL_GUID]))
+                {
+                    Harmony.PatchAll(typeof(SoundManagerPatcher)); // apply LLL 1.7.0 sound fix to pre v81
+                }
                 if (pluginInfo.Metadata.Version >= new Version(PackDefinition.v73Mods[OPI.LLL_GUID]))
                 {
                     Harmony.PatchAll(typeof(LLLConfigLoaderPatcher_v2));
                     Harmony.PatchAll(typeof(WesleysWeatherStuffPatcher));
+                    Harmony.PatchAll(typeof(ExpandedMineshaftExtraItemsPatcher)); // add +6 to expanded mineshaft
                 }
                 else
                 {
                     Harmony.PatchAll(typeof(LLLConfigLoaderPatcher_v1));
                 }
+            }
+            if (Chainloader.PluginInfos.TryGetValue(OPI.WEATHERREGISTRY_GUID, out PluginInfo weatherRegistryInfo))
+            {
+                Harmony.PatchAll(typeof(WeatherRegistryConfigPatcher));
             }
             Logger.LogDebug("Finished patching!");
         }
