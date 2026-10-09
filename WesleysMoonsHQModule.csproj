@@ -73,6 +73,9 @@
       <Reference Include="WesleyMoonScripts">
         <HintPath>deps\WesleyMoonScripts.dll</HintPath>
       </Reference>
+      <Reference Include="WesleysInteriorTools" Publicize="true">
+        <HintPath>deps\WesleysInteriorTools.dll</HintPath>
+      </Reference>
       <Reference Include="WesleysWeatherStuff" Publicize="true">
         <HintPath>deps\WesleysWeatherStuff.dll</HintPath>
       </Reference>

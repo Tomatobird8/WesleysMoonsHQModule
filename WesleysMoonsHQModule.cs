@@ -2,11 +2,11 @@ using BepInEx;
 using BepInEx.Bootstrap;
 using BepInEx.Logging;
 using HarmonyLib;
-using JLL.Components;
 using JLL.Components.Filters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using WesleyMoonScripts;
@@ -98,7 +98,8 @@ public class WesleysMoonsHQModule : BaseUnityPlugin
             disallowedMods : [OPI.LOADSTONE_GUID, OPI.WATERASSETRESTORER_GUID, OPI.V73DCFIX_GUID],
             patches: [
                 typeof(LLLConfigLoaderPatcher_v2),
-                typeof(WeatherRegistryConfigPatcher_v2)
+                typeof(WeatherRegistryConfigPatcher_v2),
+                typeof(FabricationDoorOpener)
                 ]
             )
     ];
@@ -167,11 +168,11 @@ public class WesleysMoonsHQModule : BaseUnityPlugin
         if (scene.name == "MusemaScene") 
         {
             EditGiftShop(scene);
-            if (!WesleyScripts.LockMoons.Value) EditMusemaScene(scene);
+            if (!WesleyScripts.LockMoons.Value && GameNetworkManager.Instance?.gameVersionNum >= 81) EditMusemaScene(scene);
         }
         if (scene.name == "Asteroid14Scene" && WesleyScripts.LockMoons.Value)
         {
-            if (GameNetworkManager.Instance?.gameVersionNum < 73)
+            if (GameNetworkManager.Instance?.gameVersionNum < 81)
                 BalancePatches_v1.EditHyveScene(scene);
             else
                 BalancePatches_v2.EditHyveScene(scene);
@@ -190,6 +191,7 @@ public class WesleysMoonsHQModule : BaseUnityPlugin
     // GALETRY GIFT SHOP CHANGES
     internal static void EditGiftShop(Scene scene)
     {
+        if (!NetworkManager.Singleton.IsServer) return;
         Logger.LogInfo("Editing Gift Shops in Musema/Galetry scene.");
 
         GameObject environment = GetRootGameObject(scene, "Environment");
@@ -214,7 +216,12 @@ public class WesleysMoonsHQModule : BaseUnityPlugin
 
         Transform environment = GetRootGameObject(scene, "Environment").transform;
 
-        Transform[] dontDestroy = [environment.Find("SideBuilding/HangingLight (6)"), environment.Find("SideBuilding/fireexit"), environment.Find("SideBuilding/CraftingMachine"), environment.Find("SideBuilding/FireExitInteractTrigger")];
+        Transform[] dontDestroy = [
+            environment.Find("SideBuilding/HangingLight (6)"), 
+            environment.Find("SideBuilding/fireexit"), 
+            environment.Find("SideBuilding/CraftingMachine"), 
+            environment.Find("SideBuilding/FireExitInteractTrigger")
+            ];
 
         foreach (Transform t in dontDestroy) 
         {
