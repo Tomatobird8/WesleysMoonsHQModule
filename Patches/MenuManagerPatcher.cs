@@ -2,6 +2,7 @@
 using HarmonyLib;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using WesleyMoonScripts;
 
 namespace WesleysMoonsHQModule.Patches;
@@ -11,6 +12,25 @@ namespace WesleysMoonsHQModule.Patches;
 [HarmonyPatch(typeof(MenuManager))]
 internal class MenuManagerPatcher
 {
+    private static Action<MenuManager, string, string, bool>? MenuNotif3;
+    private static Action<MenuManager, string, string>? MenuNotif2;
+
+    static MenuManagerPatcher()
+    {
+        MethodInfo? method = AccessTools.Method(typeof(MenuManager), nameof(MenuManager.DisplayMenuNotification));
+        if (method != null)
+        {
+            if (method.GetParameters().Length == 3)
+            {
+                MenuNotif3 = AccessTools.MethodDelegate<Action<MenuManager, string, string, bool>>(method);
+            }
+            else
+            {
+                MenuNotif2 = AccessTools.MethodDelegate<Action<MenuManager, string, string>>(method);
+            }
+        }
+    }
+
     [HarmonyPatch("Start")]
     [HarmonyPostfix]
     [HarmonyBefore("OreoM.VLog")]
@@ -66,7 +86,18 @@ internal class MenuManagerPatcher
         {
             invalidSessionReason = invalidSessionReason.TrimEnd(',', ' ');
             WesleysMoonsHQModule.Logger.LogWarning($"WARNING! Modpack misconfiguration: {invalidSessionReason}");
-            __instance.DisplayMenuNotification($"WARNING! Modpack misconfiguration: {invalidSessionReason}", "[ OK ]");
+            if (MenuNotif3 != null)
+            {
+                MenuNotif3(__instance, $"WARNING! Modpack misconfiguration: {invalidSessionReason}", "[ OK ]", true);
+            }
+            else if (MenuNotif2 != null)
+            {
+                MenuNotif2(__instance, $"WARNING! Modpack misconfiguration: {invalidSessionReason}", "[ OK ]");
+            }
+            else
+            {
+                WesleysMoonsHQModule.Logger.LogError("Displaying menu notification failed.");
+            }
         }
     }
 
