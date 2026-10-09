@@ -27,6 +27,84 @@ public class WesleysMoonsHQModule : BaseUnityPlugin
     internal new static ManualLogSource Logger { get; private set; } = null!;
     internal static Harmony? Harmony { get; set; }
 
+    internal static List<PackDefinition> packDefinitions =
+    [
+        new PackDefinition(
+            version: Versions.v69,
+            requiredMods: new Dictionary<string, Version>{
+                {OPI.LLL_GUID, new Version("1.4.11") },
+                {OPI.PATHFINDINGLAGFIX_GUID, new Version("2.2.4") },
+                {OPI.PATHFINDINGLIB_GUID, new Version("2.3.2") },
+                {OPI.STARLANCERAIFIX_GUID, new Version("3.9.0") }, // 3.9.1 on TS
+                {OPI.LETHALLIB_GUID, new Version("1.0.1") },
+                {OPI.LOADSTONE_GUID, new Version("0.1.23") } },
+            optionalMods: new Dictionary<string, Version>{ {OPI.CULLFACTORY_GUID, new Version("2.0.4") } },
+            disallowedMods : [],
+            patches: [
+                typeof(StartOfRoundPatcher), 
+                typeof(SoundManagerPatcher), 
+                typeof(LLLConfigLoaderPatcher_v1)
+                ]
+            ),
+        new PackDefinition(
+            version: Versions.v72,
+            requiredMods: new Dictionary<string, Version>{
+                {OPI.LLL_GUID, new Version("1.4.11") },
+                {OPI.PATHFINDINGLAGFIX_GUID, new Version("2.2.4") },
+                {OPI.PATHFINDINGLIB_GUID, new Version("2.3.2") },
+                {OPI.STARLANCERAIFIX_GUID, new Version("3.11.1") },
+                {OPI.LETHALLIB_GUID, new Version("1.1.1") },
+                {OPI.LOADSTONE_GUID, new Version("0.1.23") } },
+            optionalMods: new Dictionary<string, Version>{ {OPI.CULLFACTORY_GUID, new Version("2.0.4") } },
+            disallowedMods : [],
+            patches: [
+                typeof(StartOfRoundPatcher), 
+                typeof(SoundManagerPatcher), 
+                typeof(LLLConfigLoaderPatcher_v1)
+                ]
+            ),
+        new PackDefinition(
+            version: Versions.v73,
+            requiredMods: new Dictionary<string, Version>{
+                {OPI.LLL_GUID, new Version("1.6.8") },
+                {OPI.WEATHERREGISTRY_GUID, new Version("0.7.5") },
+                {OPI.MROVLIB_GUID, new Version("0.4.2") },
+                {OPI.PATHFINDINGLAGFIX_GUID, new Version("2.2.5") },
+                {OPI.PATHFINDINGLIB_GUID, new Version("2.4.1") },
+                {OPI.STARLANCERAIFIX_GUID, new Version("3.11.1") },
+                {OPI.LETHALLIB_GUID, new Version("1.1.1") },
+                {OPI.LOADSTONE_GUID, new Version("0.1.23") } },
+            optionalMods: new Dictionary<string, Version>{ {OPI.CULLFACTORY_GUID, new Version("2.0.4") } },
+            disallowedMods : [],
+            patches: [
+                typeof(StartOfRoundPatcher), 
+                typeof(SoundManagerPatcher), 
+                typeof(LLLConfigLoaderPatcher_v2), 
+                typeof(WesleysWeatherStuffPatcher), 
+                typeof(ExpandedMineshaftExtraItemsPatcher), 
+                typeof(WeatherRegistryConfigPatcher)
+                ]
+            ),
+        new PackDefinition(
+            version: Versions.v81,
+            requiredMods: new Dictionary<string, Version>{
+                {OPI.LLL_GUID, new Version("1.7.13") },
+                {OPI.WEATHERREGISTRY_GUID, new Version("0.8.8") },
+                {OPI.MROVLIB_GUID, new Version("0.4.15") },
+                {OPI.PATHFINDINGLAGFIX_GUID, new Version("2.4.2") },
+                {OPI.PATHFINDINGLIB_GUID, new Version("2.4.1") },
+                {OPI.STARLANCERAIFIX_GUID, new Version("3.13.2") },
+                {OPI.LETHALLIB_GUID, new Version("1.2.0") } },
+            optionalMods: new Dictionary<string, Version>{ {OPI.CULLFACTORY_GUID, new Version("2.0.11") } },
+            disallowedMods : [OPI.LOADSTONE_GUID],
+            patches: [
+                typeof(LLLConfigLoaderPatcher_v2),
+                typeof(WeatherRegistryConfigPatcher),
+                typeof(ExpandedMineshaftExtraItemsPatcher)
+                ]
+            )
+    ];
+
     // Allowed items to spawn in giftshop (to avoid spawning scrap)
     internal static List<string> allowedItemNames = ["Bury the child videotape", "Teach the disloyal videotape"];
 
@@ -58,32 +136,33 @@ public class WesleysMoonsHQModule : BaseUnityPlugin
 
         Logger.LogDebug("Patching...");
 
-        Harmony.PatchAll(typeof(StartOfRoundPatcher)); // BALANCING PATCHES
-
         Harmony.PatchAll(typeof(MenuManagerPatcher));
 
-        if (Chainloader.PluginInfos.TryGetValue(OPI.LLL_GUID, out PluginInfo pluginInfo))
+        if (Chainloader.PluginInfos.TryGetValue(OPI.LLL_GUID, out PluginInfo lllInfo))
         {
-            if (pluginInfo.Metadata.Version <= new Version(PackDefinition.v73Mods[OPI.LLL_GUID]))
+            foreach (PackDefinition pack in packDefinitions)
             {
-                Harmony.PatchAll(typeof(SoundManagerPatcher)); // apply LLL 1.7.0 sound fix to pre v81
+                if (lllInfo.Metadata.Version == pack.RequiredMods[OPI.LLL_GUID])
+                {
+                    PatchType(pack.Patches);
+                }
             }
-            if (pluginInfo.Metadata.Version >= new Version(PackDefinition.v73Mods[OPI.LLL_GUID]))
-            {
-                Harmony.PatchAll(typeof(LLLConfigLoaderPatcher_v2));
-                Harmony.PatchAll(typeof(WesleysWeatherStuffPatcher));
-                Harmony.PatchAll(typeof(ExpandedMineshaftExtraItemsPatcher)); // add +6 to expanded mineshaft
-            }
-            else
-            {
-                Harmony.PatchAll(typeof(LLLConfigLoaderPatcher_v1));
-            }
-        }
-        if (Chainloader.PluginInfos.TryGetValue(OPI.WEATHERREGISTRY_GUID, out PluginInfo weatherRegistryInfo))
-        {
-            Harmony.PatchAll(typeof(WeatherRegistryConfigPatcher));
         }
         Logger.LogDebug("Finished patching!");
+    }
+
+    internal static void PatchType(Type[] typeArray)
+    {
+        foreach (Type type in typeArray)
+        {
+            PatchType(type);
+        }
+    }
+
+    internal static void PatchType(Type type)
+    {
+        Logger.LogDebug($"Patching {type.Name}");
+        Harmony?.PatchAll(type);
     }
 
     internal static void OnSceneLoad(Scene scene, LoadSceneMode mode)
@@ -132,9 +211,9 @@ public class WesleysMoonsHQModule : BaseUnityPlugin
 
     // HYVE BALANCE CHANGES
     // Replace big hive spawn table with a null enemy
-    internal static void EditHyveScene(Scene scene)
+    internal static void EditHyveScene(Scene scene) // TODO: MOVE THIS TO BALANCING PATCHES
     {
-        Logger.LogInfo("Editing Galetry Scene.");
+        Logger.LogInfo("Editing Hyve Scene.");
 
         GameObject environment = GetRootGameObject(scene, "Environment");
 
@@ -181,5 +260,12 @@ public class WesleysMoonsHQModule : BaseUnityPlugin
             Logger.LogInfo("Removing randomAprilEffect...");
             Destroy(d.gameObject);
         }
+    }
+    internal enum Versions
+    {
+        v69 = 69,
+        v72 = 72,
+        v73 = 73,
+        v81 = 81
     }
 }

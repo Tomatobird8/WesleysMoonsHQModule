@@ -1,5 +1,6 @@
 ﻿using BepInEx;
 using HarmonyLib;
+using System;
 using System.Collections.Generic;
 using WesleyMoonScripts;
 
@@ -28,28 +29,20 @@ internal class MenuManagerPatcher
         // Global required mods
         invalidSessionReason += CheckModValidity(PackDefinition.commonRequiredMods, true);
 
+        bool packFound = false;
+
         // Version specific required mods
-        switch (verNum)
+        foreach (PackDefinition pack in WesleysMoonsHQModule.packDefinitions)
         {
-            case 69:
-                invalidSessionReason += CheckModValidity(PackDefinition.v69Mods, true);
-                break;
-
-            case 72:
-                invalidSessionReason += CheckModValidity(PackDefinition.v72Mods, true);
-                break;
-
-            case 73:
-                invalidSessionReason += CheckModValidity(PackDefinition.v73Mods, true);
-                break;
-
-            default:
-                invalidSessionReason += "Unsupported game version";
-                break;
+            if ((int)pack.Version != verNum) continue;
+            invalidSessionReason += CheckModValidity(pack.RequiredMods, true);
+            packFound = true;
         }
 
-        // Global optional mods
-        invalidSessionReason += CheckModValidity(PackDefinition.commonOptionalMods, false);
+        if (!packFound) 
+        {
+            invalidSessionReason += "Unsupported game version";
+        }
 
         // FreeMoons special check
         if (WesleysMoonsHQModule.pluginInfos.ContainsKey(OtherPluginInfos.FREEMOONS_GUID) && WesleyScripts.LockMoons.Value)
@@ -76,19 +69,23 @@ internal class MenuManagerPatcher
         }
     }
 
-    internal static string CheckModValidity(Dictionary<string, string> dict, bool required)
+    internal static string CheckModValidity(Dictionary<string, Version> dict, bool required)
     {
         string invalidSessionReason = "";
-        foreach (KeyValuePair<string, string> entry in dict)
+        foreach (KeyValuePair<string, Version> entry in dict)
         {
             if (!WesleysMoonsHQModule.pluginInfos.ContainsKey(entry.Key))
             {
                 if (required) invalidSessionReason += $"{entry.Key} v{entry.Value} is misssing, ";
                 continue;
             }
-            else if (WesleysMoonsHQModule.pluginInfos[entry.Key].Metadata.Version.ToString() != entry.Value)
+            else if (WesleysMoonsHQModule.pluginInfos[entry.Key].Metadata.Version != entry.Value)
             {
-                invalidSessionReason += $"{WesleysMoonsHQModule.pluginInfos[entry.Key].Metadata.GUID} v{WesleysMoonsHQModule.pluginInfos[entry.Key].Metadata.Version.ToString()} didnt match required version v{entry.Value}, ";
+                if (!required && WesleysMoonsHQModule.pluginInfos[entry.Key].Metadata.Version <= entry.Value)
+                {
+                    continue;
+                }
+                invalidSessionReason += $"{WesleysMoonsHQModule.pluginInfos[entry.Key].Metadata.GUID} v{WesleysMoonsHQModule.pluginInfos[entry.Key].Metadata.Version} didnt match required version v{entry.Value}, ";
             }
         }
         return invalidSessionReason;
