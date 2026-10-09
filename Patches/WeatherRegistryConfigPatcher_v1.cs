@@ -20,20 +20,17 @@ public class WeatherRegistryConfigPatcher_v1
     [HarmonyPostfix]
     public static void Awake_Postfix()
     {
-        const int hybridAlgorithmIndex = 2;
-        var weatherCalcType = AccessTools.TypeByName("WeatherRegistry.WeatherCalculation")
-                            /*?? AccessTools.TypeByName("WeatherCalculation")*/;
+        var weatherCalcType = AccessTools.TypeByName("WeatherRegistry.WeatherCalculation");
 
-        IDictionary algorithmsObj = (IDictionary)AccessTools.Field(weatherCalcType, "WeatherAlgorithms").GetValue(null)
-                         /*?? AccessTools.Property(weatherCalcType, "WeatherAlgorithms")?.GetValue(null)*/;
+        IDictionary algorithmsObj = (IDictionary)AccessTools.Field(weatherCalcType, "WeatherAlgorithms").GetValue(null); // Dictionary<WeatherAlgorithm (enum), WeatherSelectionAlgorithm (property)>
 
         object? selectedAlgorithm = null;
 
         foreach (DictionaryEntry entry in algorithmsObj)
         {
-            if (System.Convert.ToInt32(entry.Key) == hybridAlgorithmIndex)
+            if (Convert.ToInt32(entry.Key) == 2) // 2 - Hybrid algorithm
             {
-                selectedAlgorithm = entry.Value;
+                selectedAlgorithm = entry.Value; // new HybridWeatherSelection();
                 break;
             }
         }
@@ -43,12 +40,11 @@ public class WeatherRegistryConfigPatcher_v1
             return;
         }
 
-        var settingsType = AccessTools.TypeByName("WeatherRegistry.Settings")
-                        /*?? AccessTools.TypeByName("Settings")*/;
+        // this is just ConfigManager.WeatherAlgorithm.Value = WeatherAlgorithm.Hybrid but in reflection because the namespaces for this stuff changed later
+        var settingsType = AccessTools.TypeByName("WeatherRegistry.Settings");
         AccessTools.PropertySetter(settingsType, "WeatherSelectionAlgorithm").Invoke(null, [selectedAlgorithm]);
 
-        var configManagerType = AccessTools.TypeByName("WeatherRegistry.ConfigManager")
-                          /*?? AccessTools.TypeByName("ConfigManager")*/;
+        var configManagerType = AccessTools.TypeByName("WeatherRegistry.ConfigManager");
         var weatherAlgorithmConfig = AccessTools.Property(configManagerType, "WeatherAlgorithm").GetValue(null);
         var configValueProp = AccessTools.Property(weatherAlgorithmConfig.GetType(), "Value");
         var hybridEnumValue = Enum.Parse(configValueProp.PropertyType, "Hybrid");
@@ -57,19 +53,12 @@ public class WeatherRegistryConfigPatcher_v1
         ConfigManager.FirstDayClear.Value = true;
         ConfigManager.WeatherAlgorithm.ConfigFile.Save();
         ConfigManager.FirstDayClear.ConfigFile.Save();
-
-        /*        Settings.WeatherSelectionAlgorithm = WeatherCalculation.WeatherAlgorithms[WeatherCalculation.WeatherAlgorithm.Hybrid];
-        ConfigManager.WeatherAlgorithm.Value = WeatherCalculation.WeatherAlgorithm.Hybrid;
-        ConfigManager.FirstDayClear.Value = true;
-        ConfigManager.WeatherAlgorithm.ConfigFile.Save();
-        ConfigManager.FirstDayClear.ConfigFile.Save();*/
     }
 
     [HarmonyPatch(typeof(RoundManager), nameof(RoundManager.Start))]
     [HarmonyPostfix]
     public static void Start_Postfix() {
-        Weather[] weathers = [.. WeatherManager.RegisteredWeathers];
-        foreach (Weather weather in weathers)
+        foreach (Weather weather in WeatherManager.RegisteredWeathers)
         {
             if (weather.Config.ScrapValueMultiplier.ConfigEntry.Value != (float)weather.Config.ScrapValueMultiplier.ConfigEntry.DefaultValue || weather.Config.ScrapAmountMultiplier.ConfigEntry.Value != (float)weather.Config.ScrapAmountMultiplier.ConfigEntry.DefaultValue || weather.Config.DefaultWeight.ConfigEntry.Value != (int)weather.Config.DefaultWeight.ConfigEntry.DefaultValue)
             {

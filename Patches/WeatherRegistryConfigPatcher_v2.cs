@@ -21,8 +21,7 @@ public class WeatherRegistryConfigPatcher_v2
     public static void Awake_Postfix()
     {
         var algorithmValue = WeatherCalculation.WeatherAlgorithms[WeatherAlgorithm.Hybrid];
-        AccessTools.PropertySetter(typeof(Settings), nameof(Settings.WeatherSelectionAlgorithm))
-        ?.Invoke(null, [algorithmValue]);
+        AccessTools.PropertySetter(typeof(Settings), nameof(Settings.WeatherSelectionAlgorithm)).Invoke(null, [algorithmValue]);
         ConfigManager.WeatherAlgorithm.Value = WeatherAlgorithm.Hybrid;
         ConfigManager.FirstDayClear.Value = true;
         ConfigManager.WeatherAlgorithm.ConfigFile.Save();
@@ -32,8 +31,7 @@ public class WeatherRegistryConfigPatcher_v2
     [HarmonyPatch(typeof(RoundManager), nameof(RoundManager.Start))]
     [HarmonyPostfix]
     public static void Start_Postfix() {
-        Weather[] weathers = [.. WeatherManager.RegisteredWeathers];
-        foreach (Weather weather in weathers)
+        foreach (Weather weather in WeatherManager.RegisteredWeathers)
         {
             if (weather.Config.ScrapValueMultiplier.ConfigEntry.Value != (float)weather.Config.ScrapValueMultiplier.ConfigEntry.DefaultValue || weather.Config.ScrapAmountMultiplier.ConfigEntry.Value != (float)weather.Config.ScrapAmountMultiplier.ConfigEntry.DefaultValue || weather.Config.DefaultWeight.ConfigEntry.Value != (int)weather.Config.DefaultWeight.ConfigEntry.DefaultValue)
             {

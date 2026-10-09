@@ -19,7 +19,6 @@ namespace WesleysMoonsHQModule;
 [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
 [BepInDependency(OPI.JLL_WMS_GUID)]
 [BepInDependency(OPI.LLL_GUID)]
-[BepInDependency(OPI.WEATHERREGISTRY_GUID, BepInDependency.DependencyFlags.SoftDependency)]
 
 public class WesleysMoonsHQModule : BaseUnityPlugin
 {
@@ -103,10 +102,6 @@ public class WesleysMoonsHQModule : BaseUnityPlugin
                 ]
             )
     ];
-
-    // Allowed items to spawn in giftshop (to avoid spawning scrap)
-    internal static List<string> allowedItemNames = ["Bury the child videotape", "Teach the disloyal videotape"];
-
     // Skip these scenes
     internal static List<string> scenesToSkip = ["MainMenu", "InitScene", "InitSceneLaunchOptions"];
 
@@ -171,7 +166,8 @@ public class WesleysMoonsHQModule : BaseUnityPlugin
         RemoveAprilFools(scene);
         if (scene.name == "MusemaScene") 
         {
-            EditMusemaScene(scene);
+            EditGiftShop(scene);
+            if (!WesleyScripts.LockMoons.Value) EditMusemaScene(scene);
         }
         if (scene.name == "Asteroid14Scene" && WesleyScripts.LockMoons.Value)
         {
@@ -192,9 +188,9 @@ public class WesleysMoonsHQModule : BaseUnityPlugin
     }
 
     // GALETRY GIFT SHOP CHANGES
-    internal static void EditMusemaScene(Scene scene)
+    internal static void EditGiftShop(Scene scene)
     {
-        Logger.LogInfo("Editing Galetry Scene.");
+        Logger.LogInfo("Editing Gift Shops in Musema/Galetry scene.");
 
         GameObject environment = GetRootGameObject(scene, "Environment");
 
@@ -204,10 +200,25 @@ public class WesleysMoonsHQModule : BaseUnityPlugin
             // Only affect the shop script with valuable scrap in it
             if (shop.Catalogue[0].ItemName == "Mortar hammer")
             {
-                // Remove all but included items in allowedItemNames from shop catalogue.
-                shop.Catalogue = [.. shop.Catalogue.Where(item => allowedItemNames.Contains(item.ItemName))];
+                // Make scrap not have value
+                shop.setScrapValue = false;
                 break;
             }
+        }
+    }
+
+    // GALETRY PROGRESSION OBJECT CHANGES
+    internal static void EditMusemaScene(Scene scene)
+    {
+        Logger.LogInfo("Editing progression objects in Musema/Galetry scene.");
+
+        Transform environment = GetRootGameObject(scene, "Environment").transform;
+
+        Transform[] dontDestroy = [environment.Find("SideBuilding/HangingLight (6)"), environment.Find("SideBuilding/fireexit"), environment.Find("SideBuilding/CraftingMachine"), environment.Find("SideBuilding/FireExitInteractTrigger")];
+
+        foreach (Transform t in dontDestroy) 
+        {
+            t.GetComponent<ProggressionObject>().enabled = false;
         }
     }
 
