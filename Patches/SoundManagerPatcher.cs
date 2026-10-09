@@ -5,6 +5,10 @@ using System.Collections;
 
 namespace WesleysMoonsHQModule.Patches;
 
+/// <summary>
+/// Downpatch of sound glitch fix to pre LLL 1.7.0
+/// </summary>
+
 [HarmonyPatch(typeof(SoundManager))]
 internal class SoundManagerPatcher
 {

@@ -6,6 +6,9 @@ using WesleyMoonScripts;
 
 namespace WesleysMoonsHQModule.Patches;
 
+/// <summary>
+/// Balancing patches pre v81
+/// </summary>
 [HarmonyPatch(typeof(StartOfRound))]
 internal class StartOfRoundPatcher
 {

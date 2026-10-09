@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using WesleyMoonScripts;
 
 namespace WesleysMoonsHQModule.Patches;
-
+/// <summary>
+/// Pack validity checks to inform user whether the current pack configuration seems valid.
+/// </summary>
 [HarmonyPatch(typeof(MenuManager))]
 internal class MenuManagerPatcher
 {

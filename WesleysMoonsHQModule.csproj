@@ -59,7 +59,7 @@
 
     <ItemGroup>
       <Reference Include="JLL">
-        <HintPath>..\JLLConfigurator\deps\JLL.dll</HintPath>
+        <HintPath>deps\JLL.dll</HintPath>
       </Reference>
       <Reference Include="LethalLevelLoader" Publicize="true">
         <HintPath>deps\LethalLevelLoader.dll</HintPath>
@@ -71,7 +71,7 @@
         <HintPath>deps\WeatherRegistry.dll</HintPath>
       </Reference>
       <Reference Include="WesleyMoonScripts">
-        <HintPath>..\JLLConfigurator\deps\WesleyMoonScripts.dll</HintPath>
+        <HintPath>deps\WesleyMoonScripts.dll</HintPath>
       </Reference>
       <Reference Include="WesleysWeatherStuff" Publicize="true">
         <HintPath>deps\WesleysWeatherStuff.dll</HintPath>

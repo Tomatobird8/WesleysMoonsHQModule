@@ -4,7 +4,9 @@ using UnityEngine;
 using WeatherRegistry;
 
 namespace WesleysMoonsHQModule.Patches;
-
+/// <summary>
+/// WeatherRegistry config lock for v73
+/// </summary>
 [HarmonyPatch]
 public class WeatherRegistryConfigPatcher
 {
@@ -48,7 +50,7 @@ public class WeatherRegistryConfigPatcher
         if (infoDisplay == null)
         {
             WesleysMoonsHQModule.Logger.LogInfo("infoDisplay is null. Creating a new infodisplay.");
-            GameObject infoDisplayObject = new GameObject("WesleysMoonsHQModule_infoDisplay");
+            GameObject infoDisplayObject = new("WesleysMoonsHQModule_infoDisplay");
             infoDisplayObject.transform.parent = HUDManager.Instance.weightCounter.transform.parent;
             TextMeshProUGUI weightCounter = HUDManager.Instance.weightCounter;
             infoDisplay = infoDisplayObject.AddComponent<TextMeshProUGUI>();

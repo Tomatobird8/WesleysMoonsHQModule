@@ -2,7 +2,9 @@
 using OPI = WesleysMoonsHQModule.OtherPluginInfos;
 
 namespace WesleysMoonsHQModule;
-
+/// <summary>
+/// Modpack definitions
+/// </summary>
 internal class PackDefinition
 {
     // --- MOD VERSION DEFINITIONS ---

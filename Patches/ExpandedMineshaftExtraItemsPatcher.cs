@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Reflection.Emit;
 
 namespace WesleysMoonsHQModule.Patches;
-
+/// <summary>
+/// Patch to add extra items to mineshaft to match vanilla mineshaft itemcounts
+/// </summary>
 [HarmonyPatch(typeof(RoundManager))]
 internal class ExpandedMineshaftExtraItemsPatcher
 {

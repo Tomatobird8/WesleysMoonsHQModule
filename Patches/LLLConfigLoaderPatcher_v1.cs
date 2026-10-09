@@ -3,6 +3,10 @@ using System.Collections.Generic;
 
 namespace WesleysMoonsHQModule.Patches;
 
+/// <summary>
+/// Pre v73 LLL Config Lock
+/// </summary>
+
 [HarmonyPatch]
 internal class LLLConfigLoaderPatcher_v1
 {
