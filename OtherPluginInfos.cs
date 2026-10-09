@@ -17,4 +17,6 @@ internal static class OtherPluginInfos
     public const string STREAMOVERLAYS_GUID = "com.github.zehsteam.StreamOverlays";
     public const string LOADSTONE_GUID = "com.adibtw.loadstone";
     public const string VLOG_GUID = "OreoM.VLog";
+    public const string WATERASSETRESTORER_GUID = "Sniper1_1.WaterAssetRestorer";
+    public const string V73DCFIX_GUID = "hlb.V73dcfix";
 }

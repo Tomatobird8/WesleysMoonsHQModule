@@ -41,7 +41,7 @@ public class WesleysMoonsHQModule : BaseUnityPlugin
             optionalMods: new Dictionary<string, Version>{ {OPI.CULLFACTORY_GUID, new Version("2.0.4") } },
             disallowedMods : [],
             patches: [
-                typeof(StartOfRoundPatcher), 
+                typeof(BalancePatches_v1), 
                 typeof(SoundManagerPatcher), 
                 typeof(LLLConfigLoaderPatcher_v1)
                 ]
@@ -58,7 +58,7 @@ public class WesleysMoonsHQModule : BaseUnityPlugin
             optionalMods: new Dictionary<string, Version>{ {OPI.CULLFACTORY_GUID, new Version("2.0.4") } },
             disallowedMods : [],
             patches: [
-                typeof(StartOfRoundPatcher), 
+                typeof(BalancePatches_v1), 
                 typeof(SoundManagerPatcher), 
                 typeof(LLLConfigLoaderPatcher_v1)
                 ]
@@ -77,7 +77,7 @@ public class WesleysMoonsHQModule : BaseUnityPlugin
             optionalMods: new Dictionary<string, Version>{ {OPI.CULLFACTORY_GUID, new Version("2.0.4") } },
             disallowedMods : [],
             patches: [
-                typeof(StartOfRoundPatcher), 
+                typeof(BalancePatches_v1), 
                 typeof(SoundManagerPatcher), 
                 typeof(LLLConfigLoaderPatcher_v2), 
                 typeof(WesleysWeatherStuffPatcher), 
@@ -96,11 +96,10 @@ public class WesleysMoonsHQModule : BaseUnityPlugin
                 {OPI.STARLANCERAIFIX_GUID, new Version("3.13.2") },
                 {OPI.LETHALLIB_GUID, new Version("1.2.0") } },
             optionalMods: new Dictionary<string, Version>{ {OPI.CULLFACTORY_GUID, new Version("2.0.11") } },
-            disallowedMods : [OPI.LOADSTONE_GUID],
+            disallowedMods : [OPI.LOADSTONE_GUID, OPI.WATERASSETRESTORER_GUID, OPI.V73DCFIX_GUID],
             patches: [
                 typeof(LLLConfigLoaderPatcher_v2),
-                typeof(WeatherRegistryConfigPatcher),
-                typeof(ExpandedMineshaftExtraItemsPatcher)
+                typeof(WeatherRegistryConfigPatcher)
                 ]
             )
     ];
@@ -176,7 +175,10 @@ public class WesleysMoonsHQModule : BaseUnityPlugin
         }
         if (scene.name == "Asteroid14Scene" && WesleyScripts.LockMoons.Value)
         {
-            EditHyveScene(scene);
+            if (GameNetworkManager.Instance?.gameVersionNum < 73)
+                BalancePatches_v1.EditHyveScene(scene);
+            else
+                BalancePatches_v2.EditHyveScene(scene);
         }
         if (scene.name == "CalistScene")
         {
@@ -206,24 +208,6 @@ public class WesleysMoonsHQModule : BaseUnityPlugin
                 shop.Catalogue = [.. shop.Catalogue.Where(item => allowedItemNames.Contains(item.ItemName))];
                 break;
             }
-        }
-    }
-
-    // HYVE BALANCE CHANGES
-    // Replace big hive spawn table with a null enemy
-    internal static void EditHyveScene(Scene scene) // TODO: MOVE THIS TO BALANCING PATCHES
-    {
-        Logger.LogInfo("Editing Hyve Scene.");
-
-        GameObject environment = GetRootGameObject(scene, "Environment");
-
-        EnemySpawner.WeightedEnemyRefrence nullEnemy = new() { rarity = 99 };
-
-        foreach (EnemySpawner spawner in environment.GetComponentsInChildren<EnemySpawner>())
-        {
-            if (spawner.name != "Spawner") continue;
-
-            spawner.randomPool = [nullEnemy];
         }
     }
 

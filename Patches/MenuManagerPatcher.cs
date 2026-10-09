@@ -36,12 +36,13 @@ internal class MenuManagerPatcher
         {
             if ((int)pack.Version != verNum) continue;
             invalidSessionReason += CheckModValidity(pack.RequiredMods, true);
+            invalidSessionReason += CheckForBannedMods(pack.DisallowedMods);
             packFound = true;
         }
 
         if (!packFound) 
         {
-            invalidSessionReason += "Unsupported game version";
+            invalidSessionReason += "Unsupported game version, ";
         }
 
         // FreeMoons special check
@@ -89,5 +90,14 @@ internal class MenuManagerPatcher
             }
         }
         return invalidSessionReason;
+    }
+
+    internal static string CheckForBannedMods(string[] names)
+    {
+        foreach (string s in names)
+        {
+            if (WesleysMoonsHQModule.pluginInfos.ContainsKey(s)) return "Invalid mods found - please reinstall the pack, ";
+        }
+        return "";
     }
 }
