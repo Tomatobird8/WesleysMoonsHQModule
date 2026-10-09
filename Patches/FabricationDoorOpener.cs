@@ -15,7 +15,7 @@ internal class FabricationDoorOpener
     [HarmonyPostfix]
     internal static void OpenDoor(FabricationDoor __instance)
     {
-        if (!WesleyScripts.LockMoons.Value && NetworkManager.Singleton.IsServer)
+        if (!WesleyScripts.LockMoons.Value && NetworkManager.Singleton.IsServer && __instance.DoorState == 0)
         {
             __instance.OpenDoorClientRpc();
         }

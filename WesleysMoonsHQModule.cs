@@ -2,6 +2,7 @@ using BepInEx;
 using BepInEx.Bootstrap;
 using BepInEx.Logging;
 using HarmonyLib;
+using JLL.Components;
 using JLL.Components.Filters;
 using System;
 using System.Collections.Generic;
@@ -204,9 +205,116 @@ public class WesleysMoonsHQModule : BaseUnityPlugin
             {
                 // Make scrap not have value
                 shop.setScrapValue = false;
+                if (!WesleyScripts.LockMoons.Value && GameNetworkManager.Instance?.gameVersionNum >= 81) AddCraftingItemsToGiftShop(shop);
                 break;
             }
         }
+    }
+
+    internal static void AddCraftingItemsToGiftShop(ItemShop shop)
+    {
+        List<ItemSpawner.WeightedItemRefrence> newItems = [
+            /*new ItemSpawner.WeightedItemRefrence()
+            {
+                Weight = 100,
+                ItemName = "Plastic stock",
+                ScrapValue = 20,
+            },*/
+            new ItemSpawner.WeightedItemRefrence()
+            {
+                Weight = 200,
+                ItemName = "Large plastic stock",
+                ScrapValue = 70,
+            },
+            /*new ItemSpawner.WeightedItemRefrence()
+            {
+                Weight = 80,
+                ItemName = "Steel ingot",
+                ScrapValue = 20,
+            },*/
+            new ItemSpawner.WeightedItemRefrence()
+            {
+                Weight = 160,
+                ItemName = "Large steel bars",
+                ScrapValue = 70,
+            },
+            /*new ItemSpawner.WeightedItemRefrence()
+            {
+                Weight = 40,
+                ItemName = "Circuit board",
+                ScrapValue = 70,
+            },*/
+            new ItemSpawner.WeightedItemRefrence()
+            {
+                Weight = 80,
+                ItemName = "Circuit board container",
+                ScrapValue = 70,
+            },
+            /*new ItemSpawner.WeightedItemRefrence()
+            {
+                Weight = 40,
+                ItemName = "Copper wiring",
+                ScrapValue = 70,
+            },*/
+            new ItemSpawner.WeightedItemRefrence()
+            {
+                Weight = 160,
+                ItemName = "Large wire roll",
+                ScrapValue = 70,
+            },
+            /*new ItemSpawner.WeightedItemRefrence()
+            {
+                Weight = 40,
+                ItemName = "Lithium container",
+                ScrapValue = 70,
+            },*/
+            new ItemSpawner.WeightedItemRefrence()
+            {
+                Weight = 120,
+                ItemName = "Large lithium container",
+                ScrapValue = 70,
+            },
+            /*new ItemSpawner.WeightedItemRefrence()
+            {
+                Weight = 40,
+                ItemName = "Rubber roll",
+                ScrapValue = 70,
+            },*/
+            new ItemSpawner.WeightedItemRefrence()
+            {
+                Weight = 160,
+                ItemName = "Rubber chunk",
+                ScrapValue = 70,
+            },
+            /*new ItemSpawner.WeightedItemRefrence()
+            {
+                Weight = 40,
+                ItemName = "Cables",
+                ScrapValue = 70,
+            },*/
+            new ItemSpawner.WeightedItemRefrence()
+            {
+                Weight = 160,
+                ItemName = "Large cable rolls",
+                ScrapValue = 70,
+            },
+            /*new ItemSpawner.WeightedItemRefrence()
+            {
+                Weight = 40,
+                ItemName = "Chemical container",
+                ScrapValue = 70,
+            },*/
+            new ItemSpawner.WeightedItemRefrence()
+            {
+                Weight = 160,
+                ItemName = "Large chemical container",
+                ScrapValue = 70,
+            }
+            ];
+
+        List<ItemSpawner.WeightedItemRefrence> catalogue = [.. shop.Catalogue];
+        catalogue.AddRange(newItems);
+        shop.Catalogue = [.. catalogue];
     }
 
     // GALETRY PROGRESSION OBJECT CHANGES
