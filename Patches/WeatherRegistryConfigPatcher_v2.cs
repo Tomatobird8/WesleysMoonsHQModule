@@ -2,13 +2,15 @@
 using TMPro;
 using UnityEngine;
 using WeatherRegistry;
+using WeatherRegistry.Modules;
+using WeatherRegistry.Enums;
 
 namespace WesleysMoonsHQModule.Patches;
 /// <summary>
-/// WeatherRegistry config lock for v73
+/// WeatherRegistry config lock for v81
 /// </summary>
 [HarmonyPatch]
-public class WeatherRegistryConfigPatcher
+public class WeatherRegistryConfigPatcher_v2
 {
     private static TextMeshProUGUI? infoDisplay;
 
@@ -18,8 +20,10 @@ public class WeatherRegistryConfigPatcher
     [HarmonyPostfix]
     public static void Awake_Postfix()
     {
-        Settings.WeatherSelectionAlgorithm = WeatherCalculation.WeatherAlgorithms[WeatherCalculation.WeatherAlgorithm.Hybrid];
-        ConfigManager.WeatherAlgorithm.Value = WeatherCalculation.WeatherAlgorithm.Hybrid;
+        var algorithmValue = WeatherCalculation.WeatherAlgorithms[WeatherAlgorithm.Hybrid];
+        AccessTools.PropertySetter(typeof(Settings), nameof(Settings.WeatherSelectionAlgorithm))
+        ?.Invoke(null, [algorithmValue]);
+        ConfigManager.WeatherAlgorithm.Value = WeatherAlgorithm.Hybrid;
         ConfigManager.FirstDayClear.Value = true;
         ConfigManager.WeatherAlgorithm.ConfigFile.Save();
         ConfigManager.FirstDayClear.ConfigFile.Save();
@@ -28,7 +32,7 @@ public class WeatherRegistryConfigPatcher
     [HarmonyPatch(typeof(RoundManager), nameof(RoundManager.Start))]
     [HarmonyPostfix]
     public static void Start_Postfix() {
-        Weather[] weathers = Resources.FindObjectsOfTypeAll<Weather>();
+        Weather[] weathers = [.. WeatherManager.RegisteredWeathers];
         foreach (Weather weather in weathers)
         {
             if (weather.Config.ScrapValueMultiplier.ConfigEntry.Value != (float)weather.Config.ScrapValueMultiplier.ConfigEntry.DefaultValue || weather.Config.ScrapAmountMultiplier.ConfigEntry.Value != (float)weather.Config.ScrapAmountMultiplier.ConfigEntry.DefaultValue || weather.Config.DefaultWeight.ConfigEntry.Value != (int)weather.Config.DefaultWeight.ConfigEntry.DefaultValue)

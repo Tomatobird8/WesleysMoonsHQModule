@@ -82,7 +82,7 @@ public class WesleysMoonsHQModule : BaseUnityPlugin
                 typeof(LLLConfigLoaderPatcher_v2), 
                 typeof(WesleysWeatherStuffPatcher), 
                 typeof(ExpandedMineshaftExtraItemsPatcher), 
-                typeof(WeatherRegistryConfigPatcher)
+                typeof(WeatherRegistryConfigPatcher_v2)
                 ]
             ),
         new PackDefinition(
@@ -99,7 +99,7 @@ public class WesleysMoonsHQModule : BaseUnityPlugin
             disallowedMods : [OPI.LOADSTONE_GUID, OPI.WATERASSETRESTORER_GUID, OPI.V73DCFIX_GUID],
             patches: [
                 typeof(LLLConfigLoaderPatcher_v2),
-                typeof(WeatherRegistryConfigPatcher)
+                typeof(WeatherRegistryConfigPatcher_v2)
                 ]
             )
     ];
