@@ -83,8 +83,8 @@ public class WesleysMoonsHQModule : BaseUnityPlugin
                 typeof(SoundManagerPatcher), 
                 typeof(LLLConfigLoaderPatcher_v2), 
                 typeof(WesleysWeatherStuffPatcher), 
-                typeof(ExpandedMineshaftExtraItemsPatcher) 
-                /*typeof(WeatherRegistryConfigPatcher_v1)*/ // i gave up
+                typeof(ExpandedMineshaftExtraItemsPatcher),
+                typeof(WeatherRegistryConfigPatcher_v1)
                 ]
             ),
         new PackDefinition(
@@ -172,14 +172,12 @@ public class WesleysMoonsHQModule : BaseUnityPlugin
         if (scene.name == "MusemaScene") 
         {
             EditGiftShop(scene);
-            if (!WesleyScripts.LockMoons.Value && GameNetworkManager.Instance?.gameVersionNum >= 81) EditMusemaScene(scene);
+            if (!WesleyScripts.LockMoons.Value && GameNetworkManager.Instance?.gameVersionNum >= 81) 
+                EditMusemaScene(scene);
         }
         if (scene.name == "Asteroid14Scene" && WesleyScripts.LockMoons.Value)
         {
-            if (GameNetworkManager.Instance?.gameVersionNum < 81)
-                BalancePatches_v1.EditHyveScene(scene);
-            else
-                BalancePatches_v2.EditHyveScene(scene);
+            EditHyveScene(scene);
         }
         if (scene.name == "CalistScene")
         {
@@ -357,6 +355,24 @@ public class WesleysMoonsHQModule : BaseUnityPlugin
         foreach (Transform t in skyObjects)
         {
             t.SetParent(sun.transform);
+        }
+    }
+
+    // HYVE BALANCE CHANGES
+    // Replace big hive spawn table with a null enemy
+    internal static void EditHyveScene(Scene scene)
+    {
+        Logger.LogInfo("Editing Hyve Scene.");
+
+        GameObject environment = GetRootGameObject(scene, "Environment");
+
+        EnemySpawner.WeightedEnemyRefrence nullEnemy = new() { rarity = 99 };
+
+        foreach (EnemySpawner spawner in environment.GetComponentsInChildren<EnemySpawner>())
+        {
+            if (spawner.name != "Spawner") continue;
+
+            spawner.randomPool = [nullEnemy];
         }
     }
 

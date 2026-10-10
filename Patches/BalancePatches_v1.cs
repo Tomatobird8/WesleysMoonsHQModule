@@ -51,22 +51,4 @@ internal class BalancePatches_v1
             }
         }
     }
-
-    // HYVE BALANCE CHANGES
-    // Replace big hive spawn table with a null enemy
-    internal static void EditHyveScene(Scene scene)
-    {
-        WesleysMoonsHQModule.Logger.LogInfo("Editing Hyve Scene.");
-
-        GameObject environment = WesleysMoonsHQModule.GetRootGameObject(scene, "Environment");
-
-        EnemySpawner.WeightedEnemyRefrence nullEnemy = new() { rarity = 99 };
-
-        foreach (EnemySpawner spawner in environment.GetComponentsInChildren<EnemySpawner>())
-        {
-            if (spawner.name != "Spawner") continue;
-
-            spawner.randomPool = [nullEnemy];
-        }
-    }
 }

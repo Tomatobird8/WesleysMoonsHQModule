@@ -68,7 +68,6 @@ public class WeatherRegistryConfigPatcher_v1
         {
             if (weather.Config.ScrapValueMultiplier.ConfigEntry.Value != (float)weather.Config.ScrapValueMultiplier.ConfigEntry.DefaultValue || weather.Config.ScrapAmountMultiplier.ConfigEntry.Value != (float)weather.Config.ScrapAmountMultiplier.ConfigEntry.DefaultValue || weather.Config.DefaultWeight.ConfigEntry.Value != (int)weather.Config.DefaultWeight.ConfigEntry.DefaultValue)
             {
-                WesleysMoonsHQModule.Logger.LogWarning($"Invalid configuration in WeatherRegistry Weather definition: {weather.Name}");
                 VailidityCheckFailed = true;
             }
         }
