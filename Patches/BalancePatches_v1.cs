@@ -1,7 +1,5 @@
 ﻿using HarmonyLib;
-using JLL.Components;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using WesleyMoonScripts;
 
 // BALANCING PATCHES
@@ -35,7 +33,7 @@ internal class BalancePatches_v1
         {
             s.DaySpeedMultiplier = Mathf.Max(s.DaySpeedMultiplier, 1f); // Set day speed multiplier to default on all moons
 
-            if (s.name == "CosmocosLevel") // TODO: confirm scene name
+            if (s.name == "CosmocosLevel")
             {
                 s.DaySpeedMultiplier = 0.959f; // Re-ajust daytime speed - Landing cutscene
 
@@ -45,7 +43,7 @@ internal class BalancePatches_v1
                 }
             }
 
-            if (s.name == "EmpraLevel") // TODO: confirm scene name
+            else if (s.name == "EmpraLevel")
             {
                 s.DaySpeedMultiplier = 0.875f; // Re-adjust daytime speed - Cart ride
             }

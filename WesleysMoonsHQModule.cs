@@ -100,6 +100,7 @@ public class WesleysMoonsHQModule : BaseUnityPlugin
             optionalMods: new Dictionary<string, Version>{ {OPI.CULLFACTORY_GUID, new Version("2.0.11") } },
             disallowedMods : [OPI.LOADSTONE_GUID, OPI.WATERASSETRESTORER_GUID, OPI.V73DCFIX_GUID],
             patches: [
+                typeof(BalancePatches_v2),
                 typeof(LLLConfigLoaderPatcher_v2),
                 typeof(WeatherRegistryConfigPatcher_v2),
                 typeof(FabricationDoorOpener)
