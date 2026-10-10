@@ -33,7 +33,7 @@ internal class MenuManagerPatcher
 
     [HarmonyPatch("Start")]
     [HarmonyPostfix]
-    [HarmonyBefore("OreoM.VLog")]
+    [HarmonyBefore(OtherPluginInfos.VLOG_GUID)]
     internal static void Start_Postfix(MenuManager __instance)
     {
         if (__instance.isInitScene)
@@ -75,10 +75,10 @@ internal class MenuManagerPatcher
             invalidSessionReason += "Freemoons missing in SMHQ mode, ";
         }
 
-        // Vlog special check
+        // VLog special check
         if (!WesleysMoonsHQModule.pluginInfos.ContainsKey(OtherPluginInfos.VLOG_GUID))
         {
-            invalidSessionReason += "Vlog missing, ";
+            invalidSessionReason += "VLog missing, ";
         }
 
         // Display warning

@@ -4,7 +4,7 @@ using System.Reflection.Emit;
 
 namespace WesleysMoonsHQModule.Patches;
 /// <summary>
-/// Patch to add extra items to mineshaft to match vanilla mineshaft itemcounts
+/// Patch to add extra items to mineshaft to match vanilla mineshaft itemcounts in v73
 /// </summary>
 [HarmonyPatch(typeof(RoundManager))]
 internal class ExpandedMineshaftExtraItemsPatcher
@@ -12,9 +12,14 @@ internal class ExpandedMineshaftExtraItemsPatcher
     public static int GetLevel3ButCoolID()
     {
         if (RoundManager.Instance == null) return -1;
-        for (int i = 0; i < RoundManager.Instance.dungeonFlowTypes.Length; i++)
+
+        var flowTypes = RoundManager.Instance.dungeonFlowTypes;
+
+        for (int i = 0; i < flowTypes.Length; i++)
         {
-            if (RoundManager.Instance.dungeonFlowTypes[i].dungeonFlow.name == "Level3ButCoolFlow")
+            var item = flowTypes[i];
+            var flowObj = AccessTools.Field(item.GetType(), "dungeonFlow").GetValue(item);
+            if (flowObj is UnityEngine.Object obj && obj.name == "Level3ButCoolFlow")
             {
                 return i;
             }

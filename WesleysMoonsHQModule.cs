@@ -20,6 +20,8 @@ namespace WesleysMoonsHQModule;
 [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
 [BepInDependency(OPI.JLL_WMS_GUID)]
 [BepInDependency(OPI.LLL_GUID)]
+[BepInDependency(OPI.WEATHERREGISTRY_GUID, BepInDependency.DependencyFlags.SoftDependency)]
+[BepInDependency(OPI.INTERIORTOOLS_GUID, BepInDependency.DependencyFlags.SoftDependency)]
 
 public class WesleysMoonsHQModule : BaseUnityPlugin
 {
@@ -81,8 +83,8 @@ public class WesleysMoonsHQModule : BaseUnityPlugin
                 typeof(SoundManagerPatcher), 
                 typeof(LLLConfigLoaderPatcher_v2), 
                 typeof(WesleysWeatherStuffPatcher), 
-                typeof(ExpandedMineshaftExtraItemsPatcher), 
-                typeof(WeatherRegistryConfigPatcher_v2)
+                typeof(ExpandedMineshaftExtraItemsPatcher) 
+                /*typeof(WeatherRegistryConfigPatcher_v1)*/ // i gave up
                 ]
             ),
         new PackDefinition(
@@ -141,6 +143,7 @@ public class WesleysMoonsHQModule : BaseUnityPlugin
                 if (lllInfo.Metadata.Version == pack.RequiredMods[OPI.LLL_GUID])
                 {
                     PatchType(pack.Patches);
+                    break;
                 }
             }
         }

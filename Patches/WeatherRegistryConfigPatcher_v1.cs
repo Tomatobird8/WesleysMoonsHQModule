@@ -4,6 +4,7 @@ using UnityEngine;
 using WeatherRegistry;
 using System.Collections;
 using System;
+using System.Reflection;
 
 namespace WesleysMoonsHQModule.Patches;
 /// <summary>
@@ -20,7 +21,7 @@ public class WeatherRegistryConfigPatcher_v1
     [HarmonyPostfix]
     public static void Awake_Postfix()
     {
-        var weatherCalcType = AccessTools.TypeByName("WeatherRegistry.WeatherCalculation");
+        Type weatherCalcType = AccessTools.TypeByName("WeatherRegistry.WeatherCalculation");
 
         IDictionary algorithmsObj = (IDictionary)AccessTools.Field(weatherCalcType, "WeatherAlgorithms").GetValue(null); // Dictionary<WeatherAlgorithm (enum), WeatherSelectionAlgorithm (property)>
 
@@ -41,17 +42,22 @@ public class WeatherRegistryConfigPatcher_v1
         }
 
         // this is just ConfigManager.WeatherAlgorithm.Value = WeatherAlgorithm.Hybrid but in reflection because the namespaces for this stuff changed later
-        var settingsType = AccessTools.TypeByName("WeatherRegistry.Settings");
+        Type settingsType = AccessTools.TypeByName("WeatherRegistry.Settings");
         AccessTools.PropertySetter(settingsType, "WeatherSelectionAlgorithm").Invoke(null, [selectedAlgorithm]);
 
-        var configManagerType = AccessTools.TypeByName("WeatherRegistry.ConfigManager");
-        var weatherAlgorithmConfig = AccessTools.Property(configManagerType, "WeatherAlgorithm").GetValue(null);
-        var configValueProp = AccessTools.Property(weatherAlgorithmConfig.GetType(), "Value");
-        var hybridEnumValue = Enum.Parse(configValueProp.PropertyType, "Hybrid");
+        Type configManagerType = AccessTools.TypeByName("WeatherRegistry.ConfigManager");
+        object weatherAlgorithmConfig = AccessTools.Property(configManagerType, "WeatherAlgorithm").GetValue(null);
+        PropertyInfo configValueProp = AccessTools.Property(weatherAlgorithmConfig.GetType(), "Value");
+        object hybridEnumValue = Enum.Parse(configValueProp.PropertyType, "Hybrid");
         configValueProp.SetValue(weatherAlgorithmConfig, hybridEnumValue);
 
+        // ConfigManager.WeatherAlgorithm.ConfigFile.Save() as reflection to avoid compiling with the wrong namespace
+        PropertyInfo configFileProp = AccessTools.Property(weatherAlgorithmConfig.GetType(), "ConfigFile");
+        object configFile = configFileProp.GetValue(weatherAlgorithmConfig);
+        MethodInfo saveMethod = AccessTools.Method(configFile.GetType(), "Save");
+        saveMethod.Invoke(configFile, null);
+
         ConfigManager.FirstDayClear.Value = true;
-        ConfigManager.WeatherAlgorithm.ConfigFile.Save();
         ConfigManager.FirstDayClear.ConfigFile.Save();
     }
 

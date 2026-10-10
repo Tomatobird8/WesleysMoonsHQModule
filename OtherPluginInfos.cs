@@ -19,4 +19,5 @@ internal static class OtherPluginInfos
     public const string VLOG_GUID = "OreoM.VLog";
     public const string WATERASSETRESTORER_GUID = "Sniper1_1.WaterAssetRestorer";
     public const string V73DCFIX_GUID = "hlb.V73dcfix";
+    public const string INTERIORTOOLS_GUID = "MagicWesley.WesleysInteriorTools";
 }

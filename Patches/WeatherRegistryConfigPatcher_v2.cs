@@ -21,7 +21,7 @@ public class WeatherRegistryConfigPatcher_v2
     public static void Awake_Postfix()
     {
         var algorithmValue = WeatherCalculation.WeatherAlgorithms[WeatherAlgorithm.Hybrid];
-        AccessTools.PropertySetter(typeof(Settings), nameof(Settings.WeatherSelectionAlgorithm)).Invoke(null, [algorithmValue]);
+        AccessTools.PropertySetter(typeof(WeatherCalculation), nameof(WeatherCalculation.WeatherSelectionAlgorithm)).Invoke(null, [algorithmValue]);
         ConfigManager.WeatherAlgorithm.Value = WeatherAlgorithm.Hybrid;
         ConfigManager.FirstDayClear.Value = true;
         ConfigManager.WeatherAlgorithm.ConfigFile.Save();
