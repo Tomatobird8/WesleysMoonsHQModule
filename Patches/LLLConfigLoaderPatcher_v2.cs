@@ -18,14 +18,14 @@ internal class LLLConfigLoaderPatcher_v2
     [HarmonyPrefix]
     public static void PatchDungeon(ref ExtendedDungeonFlow extendedDungeonFlow)
     {
-        extendedDungeonFlow.GenerateAutomaticConfigurationOptions = false;
+        extendedDungeonFlow.GenerateAutomaticConfigurationOptions = true;
     }
 
     [HarmonyPatch(typeof(ExtendedLevelConfig), "BindConfigs")]
     [HarmonyPrefix]
     public static void PatchMoon(ref ExtendedLevel extendedLevel)
     {
-        extendedLevel.GenerateAutomaticConfigurationOptions = false;
+        extendedLevel.GenerateAutomaticConfigurationOptions = true;
         if (vanillaLevels.Contains(extendedLevel.NumberlessPlanetName))
         {
             extendedLevel.IsRouteLocked = true;

@@ -10,11 +10,12 @@ namespace WesleysMoonsHQModule.Patches;
 /// <summary>
 /// Balancing patches for v81
 /// </summary>
-[HarmonyPatch(typeof(StartOfRound))]
+[HarmonyPatch]
 internal class BalancePatches_v2
 {
     internal static bool Patched = false;
-    [HarmonyPatch("Start")]
+
+    [HarmonyPatch(typeof(StartOfRound), "Start")]
     [HarmonyPostfix]
     internal static void Start_Postfix(StartOfRound __instance)
     {
@@ -40,20 +41,6 @@ internal class BalancePatches_v2
                 // -- HYX -- item value rebalance
                 switch (item.itemName)
                 {
-                    case "Assimilated maneater":
-                    case "Assimilated bracken arm":
-                    case "Assimilated jester skull":
-                    case "Assimilated spore lizard leg":
-                    case "Assimilated hoarding bug head":
-                        item.maxValue = 220;
-                        item.minValue = 160;
-                        break;
-
-                    case "Assimilated concrete torso":
-                        item.maxValue = 360;
-                        item.minValue = 300;
-                        break;
-
                     case "The seed of assimilation":
                         item.maxValue = 580;
                         item.minValue = 500;
@@ -72,11 +59,8 @@ internal class BalancePatches_v2
                     {
                         switch (nouns[j].result.name)
                         {
-                            case "XenphirRoute":
-                                nouns[j].result.itemCost = 2500;
-                                break;
                             case "HyxRoute":
-                                nouns[j].result.itemCost = 4000;
+                                nouns[j].result.itemCost = 3500;
                                 break;
                             case "CarnateRoute":
                                 nouns[j].result.itemCost = 2200;
@@ -106,7 +90,15 @@ internal class BalancePatches_v2
 
                 if (!WesleyScripts.LockMoons.Value) continue; // patch only in HQ Mode
 
-                s.maxEnemyPowerCount = 11;
+                s.maxEnemyPowerCount = 16;
+                EnemyType? butlerType = null;
+                foreach (var eType in Resources.FindObjectsOfTypeAll<ButlerEnemyAI>())
+                {
+                    if (eType.name == "ButlerEnemy")
+                        butlerType = eType.enemyType;
+                }
+                if (butlerType != null)
+                    s.Enemies.Add(new SpawnableEnemyWithRarity(butlerType, 56));
             }
 
             // -- HYX --
@@ -114,8 +106,8 @@ internal class BalancePatches_v2
             {
                 if (!WesleyScripts.LockMoons.Value) continue; // patch only in HQ Mode
 
-                s.maxScrap = 54;
-                s.minScrap = 42;
+                s.maxScrap = 60;
+                s.minScrap = 55;
                 s.maxOutsideEnemyPowerCount = 14;
                 s.maxEnemyPowerCount = 20;
                 s.spawnProbabilityRange = 3.04f;
@@ -128,9 +120,9 @@ internal class BalancePatches_v2
                     new Keyframe(1.0f, 50.0f, 120f, 120f)
                     ]);
                 s.outsideEnemySpawnChanceThroughDay = AddToKeyFramesOverTime(s.outsideEnemySpawnChanceThroughDay, 2f);
-                s.indoorMapHazards[0].numberToSpawn = AddToKeyFramesOverTime(s.indoorMapHazards[0].numberToSpawn, 20f); // landmines
-                s.indoorMapHazards[1].numberToSpawn = AddToKeyFramesOverTime(s.indoorMapHazards[1].numberToSpawn, 12f); // turrets
-                s.indoorMapHazards[2].numberToSpawn = AddToKeyFramesOverTime(s.indoorMapHazards[2].numberToSpawn, 6f); // spiketraps
+                s.indoorMapHazards[0].numberToSpawn = ZeroOrValueCurve(5, 0.2f); // Landmines
+                s.indoorMapHazards[1].numberToSpawn = ZeroOrValueCurve(1, 0.5f); // Turrets
+                s.indoorMapHazards[2].numberToSpawn = ZeroOrValueCurve(1, 0.5f); // Spiketraps
                 s.randomWeathers[1].weatherVariable = 4; // Eclipsed
             }
 
@@ -138,18 +130,55 @@ internal class BalancePatches_v2
             {
                 if (!WesleyScripts.LockMoons.Value) continue; // patch only in HQ mode
 
-                s.maxScrap = 50;
-                s.minScrap = 47;
-                s.factorySizeMultiplier = 1.7f;
+                s.maxEnemyPowerCount = 16;
+                s.Enemies[7].rarity = 9; // Lootbug
+                s.enemySpawnChanceThroughoutDay.keys[1].time -= 0.1f;
+                s.enemySpawnChanceThroughoutDay.keys[1].value += 1f;
+                s.enemySpawnChanceThroughoutDay.keys[2].value += 3f;
+                s.outsideEnemySpawnChanceThroughDay.keys[1].time -= 0.3f;
+                s.outsideEnemySpawnChanceThroughDay.keys[2].value = 15f;
             }
 
-            else if (s.name == "XenphirLevel")
+            else if (s.name == "SelectorLevel")
             {
-                if (!WesleyScripts.LockMoons.Value) continue; // patch only in HQ Mode
+                if (!WesleyScripts.LockMoons.Value) continue; // patch only in HQ mode
 
-                s.maxScrap = 56;
-                s.minScrap = 48;
-                s.factorySizeMultiplier = 1.7f;
+                s.maxScrap = 35;
+                s.DaytimeEnemies[2].rarity = 1; // Bees
+                s.DaytimeEnemies[1].rarity = 20; // Locust
+            }
+
+            else if (s.name == "OldredLevel")
+            {
+                if (!WesleyScripts.LockMoons.Value) continue; // patch only in HQ mode
+
+                s.maxEnemyPowerCount = 20;
+                s.maxOutsideEnemyPowerCount = 8;
+                s.Enemies[10].rarity = 3; // Oilfish
+                EnemyType? nutcrackerType = null;
+                foreach (var eType in Resources.FindObjectsOfTypeAll<NutcrackerEnemyAI>())
+                {
+                    if (eType.name == "NutcrackerEnemy")
+                        nutcrackerType = eType.enemyType;
+                }
+                if (nutcrackerType != null)
+                    s.Enemies.Add(new SpawnableEnemyWithRarity(nutcrackerType, 19));
+                Keyframe[] v73indoor = new Keyframe[]
+                {
+                    new Keyframe(0f, -3f, 19.557f, 19.557f, 0f, 0.123f),
+                    new Keyframe(0.3161f, 5.4704f, 24.4795f, 24.4795f, 0.3961f, 0.3547f),
+                    new Keyframe(0.7594f, 4.973f, 2.6163f, 2.6163f, 0.2901f, 0.5361f),
+                    new Keyframe(1f, 15f, 35.604f, 35.604f, 0.0491f, 0f),
+                };
+                s.enemySpawnChanceThroughoutDay = new AnimationCurve(v73indoor);
+                Keyframe[] v73outdoor = new Keyframe[]
+                {
+                    new Keyframe(0f, -3f, -0.1126f, -0.1126f, 0f, 1f),
+                    new Keyframe(0.1717f, 0.5331f, -8.0549f, -8.0549f, 0.3272f, 0.4063f),
+                    new Keyframe(0.7145f, 3.2309f, 64.2007f, 64.2007f, 0.1701f, 0.0855f),
+                    new Keyframe(1f, 5.3594f, -1.112f, -1.112f, 0.548f, 0.4832f),
+                };
+                s.outsideEnemySpawnChanceThroughDay = new AnimationCurve(v73outdoor);
             }
         }
 
@@ -167,5 +196,29 @@ internal class BalancePatches_v2
             }
         }
         return new AnimationCurve(keyFrames);
+    }
+
+    internal static AnimationCurve ZeroOrValueCurve(float value, float normalChance)
+    {
+        Keyframe[] keyFrames = new Keyframe[]
+        {
+            new Keyframe(0f, 0f, 0f, float.PositiveInfinity),
+            new Keyframe(1 - normalChance, value, 0f, float.PositiveInfinity),
+            new Keyframe(1f, value, 0f, float.PositiveInfinity),
+        };
+
+        return new AnimationCurve(keyFrames);
+    }
+
+    [HarmonyPatch(typeof(RoundManager), nameof(RoundManager.SpawnScrapInLevel))]
+    [HarmonyAfter("mrov.WeatherRegistry")]
+    [HarmonyPrefix]
+    [HarmonyPriority(Priority.First)]
+    internal static void SpawnScrap_Pre(RoundManager __instance)
+    {
+        if (!WesleyScripts.LockMoons.Value || __instance.currentLevel.name != "CarnateLevel")
+            return;
+
+        RoundManager.Instance.scrapValueMultiplier *= 1.88f;
     }
 }
